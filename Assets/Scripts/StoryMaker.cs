@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StoryMaker : MonoBehaviour {
+public class StoryMaker : MonoBehaviour
+{
+
+    [SerializeField] public string _saveFilePath;
     private void Start()
     {
+        _saveFilePath = Application.persistentDataPath + "/Stories";
         
     }
     //New story function will ask the user to fill in a story and then will serialize it in a json.
@@ -39,11 +43,20 @@ public class StoryMaker : MonoBehaviour {
         Debug.Log(SerializedStory);
         return SerializedStory;
     }
+    //TODO save it to a json file
+    public static void SaveStory(string story)
+    {
+        //In comes the json string
+        //and out should go a json file to a destination
+        
+        
+    }
 
     void Awake()
     {
     ReadStory(NewStory());
     }
+    //TODO read from json file
 
     //Read story wil deserialize a json file with a story in it.
     //TODO loop through the Choices and Thumbnails as they are lists
