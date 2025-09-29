@@ -98,7 +98,7 @@ public class StoryMaker : MonoBehaviour
         return SerializedStory;
     }
     
-    //TODO save it to a json file
+    //DONE saves to a json file 
     public static void SaveStory(string story, string title)
     {
         //In comes the json string
@@ -116,47 +116,62 @@ public class StoryMaker : MonoBehaviour
             Console.WriteLine(e);
             throw;
         }
-        
-        
     }
-    
-    //Read story wil deserialize a json file with a story in it.
-    //TODO loop through the Choices and Thumbnails as they are lists
-    //TODO have it upload to the story database.
-    public static Story ReadStory(string storyName)
-    {
-        Story DeserializedStory;
-        try
-        {
-            DeserializedStory = JsonUtility.FromJson<Story>(File.ReadAllText(Application.persistentDataPath + "/" + storyName + ".json"));
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        Debug.Log(storyName);
-        
-        Debug.Log(DeserializedStory.StartingThumbnailId);
-        Debug.Log(DeserializedStory.Thumbnails[0]);
-        Debug.Log(DeserializedStory.Thumbnails[0].Id);
-        Debug.Log(DeserializedStory.Thumbnails[0].ImageName);
-        Debug.Log(DeserializedStory.Thumbnails[0].Description);
-        Debug.Log(DeserializedStory.Thumbnails[0].Choices[0]);
-        Debug.Log(DeserializedStory.Thumbnails[0].Choices[0].Description);
-        Debug.Log(DeserializedStory.Thumbnails[0].Choices[0].ThumbnailLinkId);
-
-        return DeserializedStory;
-    }
-
-    
-    
     
     
     void Awake()
     {
         //NewStory();
-        Story story = ReadStory("First story");
+        Story story = Deserialize.ReadStory("First story");
         //SetupStory(story);
     }
 }
+
+/*
+ *
+Barème de notation du TP – "L’histoire dont vous êtes le héros"
+
+Projet Unity mobile : lecture interactive avec gestion d’inventaire et sérialisation des données.
+Structure de données imposée (Story, Thumbnail, Choice, Item).
+
+Total : 20 points
+
+1. Chargement et sélection des histoires (5 pts)
+- Affichage d’une liste d’histoires (titre + image si possible)
+- Possibilité de sélectionner une histoire et la lancer
+DONE Chargement des données depuis un fichier local
+- Bonus si l’histoire est récupérée dynamiquement (Internet, dépôt distant…)
+- Bonne gestion des erreurs : fichier absent, image manquante, JSON mal formé, etc.
+
+2. Intégration de la structure fournie (4 pts)
+DONE Lecture correcte du JSON (Story avec ses Thumbnails, Choices, etc.)
+- Navigation dynamique entre les scènes de l’histoire (Thumbnail.Id et Choice.ThumbnailLinkId)
+- Utilisation correcte des champs dans Choice (naviguer vers une autre vignette, utiliser ou donner des items)
+- Utilisation des champs médias : images, musiques, sons (si présents)
+
+3. Lecture interactive et logique de jeu (5 pts)
+- Texte de la scène bien affiché (Thumbnail.Description)
+- Affichage des choix disponibles, navigation fluide entre les scènes
+- Gestion complète de l’inventaire :
+   - Les choix peuvent être désactivés ou cachés si le joueur ne possède pas les objets requis (NeededItemsId)
+   - Les objets sont bien donnés (GivenItemsId) ou retirés (TakenItemsId) en fonction des choix
+- L’histoire se termine clairement quand il n’y a plus de choix
+
+4. Sauvegarde et reprise (4 pts)
+- Possibilité de sauvegarder l’état du jeu : vignette actuelle + inventaire
+- Reprise correcte à partir d’une sauvegarde
+- Format propre (JSON lisible par exemple)
+- Bouton ou système de reprise automatique proposé à l’utilisateur
+
+5. Interface mobile et input (2 pts)
+- Utilisation du nouvel Input System Unity
+- UI adaptée au mobile : responsive, lisible, claire, utilisable au tactile
+
+6. Qualité du code et présentation (1 pt)
+- Code organisé, lisible, avec des fichiers séparés pour les rôles importants (chargement, logique, UI…)
+- Expérience utilisateur soignée : transitions, effets visuels, sons, feedback sur les actions
+
+Bonus (jusqu’à +2 pts)
+- Sauvegardes multiples, filtres sur les histoires, animations, effets audio soignés, système de téléchargement en ligne, etc.
+ * 
+ */

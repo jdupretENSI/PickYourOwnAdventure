@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MaiMenuEvents : MonoBehaviour
+public class StoryManager : MonoBehaviour
 {
     [SerializeField] private GameObject _buttonPanel;
     [SerializeField] private GameObject _buttonPrefab;
