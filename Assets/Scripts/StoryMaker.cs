@@ -1,15 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class StoryMaker : MonoBehaviour
 {
-
-    [SerializeField] public string _saveFilePath;
-    private void Start()
-    {
-        _saveFilePath = Application.persistentDataPath + "/Stories";
-        
-    }
+    
+    public static string _currentStory;
     //New story function will ask the user to fill in a story and then will serialize it in a json.
     //TODO User interaction
     public static string NewStory()
@@ -37,26 +33,53 @@ public class StoryMaker : MonoBehaviour
         //Third the Story is made with BOTH the previous thumbnail and Choice
         string StartingThumbnailId;
 
-        Story story = new Story("first story", new List<Thumbnail> { thumbnail });
+        Story story = new Story("First story", new List<Thumbnail> { thumbnail });
 
         var SerializedStory = JsonUtility.ToJson(story);
-        Debug.Log(SerializedStory);
+        SaveStory(SerializedStory, "First story");
         return SerializedStory;
     }
     //TODO save it to a json file
-    public static void SaveStory(string story)
+    public static void SaveStory(string story, string title)
     {
         //In comes the json string
-        //and out should go a json file to a destination
+        //and out should go a json file to a Application.persistentDataPath.
+        //The file should be named after its title
+        //TODO maybe sanitize and  limit titles for application names?
+
+        try
+        {
+            Debug.Log(Application.persistentDataPath + "/" + title + ".json");
+            //System.IO.File.WriteAllText(Application.persistentDataPath + "/" + title + ".json", story);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
         
         
     }
 
     void Awake()
     {
-    ReadStory(NewStory());
+        //Debug.Log(ReadStoryFromFile("First story"));
+        ReadStory(ReadStoryFromFile("First story"));
     }
     //TODO read from json file
+    public static string ReadStoryFromFile(string storyName)
+    {
+        try
+        {
+            _currentStory = Application.persistentDataPath + "/" + storyName + ".json";
+            return _currentStory;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 
     //Read story wil deserialize a json file with a story in it.
     //TODO loop through the Choices and Thumbnails as they are lists
