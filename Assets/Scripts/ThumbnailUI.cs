@@ -20,7 +20,7 @@ public class ThumbnailUI : MonoBehaviour {
     }
 
     private void LoadThumbnail(Thumbnail thumbnail) {
-        Image.sprite = thumbnail.Image;
+        //Image.sprite = thumbnail.ImageName;
         Description.text = thumbnail.Description;
         ClearChoices();
         foreach (Choice choice in thumbnail.Choices) {
