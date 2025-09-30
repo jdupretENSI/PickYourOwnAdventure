@@ -3,6 +3,30 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
+    //But we can use this to make one general function to send them to a new scene
+
+    public void PickScene(int scene)
+    {
+
+        switch (scene)
+        {
+            case 0:
+                Debug.Log("Start Story");
+                break;
+            case 1:
+                Debug.Log("Build Story");
+                break;
+            case 2:
+                Debug.Log("My Stories ");
+                break;
+            case 3:
+                Debug.Log("Settings");
+                break;
+        }
+    }
+    
+    
+    
     //These should all become their own classes I fear
 
     //This class will let users chose from any stories they have saved (Continue from last save), have the json file for and hopefully pick from a database
@@ -13,7 +37,6 @@ public class MainMenu : MonoBehaviour
     public class StartStory
     {
         //Player will pick a story
-        private static string _story;
         
         //Buttons should have an emitter of some sort right?
 
