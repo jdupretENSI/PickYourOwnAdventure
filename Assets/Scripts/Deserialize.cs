@@ -6,14 +6,16 @@ public class Deserialize : MonoBehaviour
 {
     //Read story wil deserialize a json file with a story in it.
     //TODO loop through the Choices and Thumbnails as they are lists
-    public static Story ReadStory(string storyName)
+    
+    //StoryName should be the entire path to the story.
+    public static Story ReadStory(string StoryName)
     {
         Story DeserializedStory;
         try
         {
             DeserializedStory =
                 JsonUtility.FromJson<Story>(
-                    File.ReadAllText(Application.persistentDataPath + "/" + storyName + ".json"));
+                    File.ReadAllText(StoryName));
         }
         catch (Exception e)
         {
@@ -21,7 +23,8 @@ public class Deserialize : MonoBehaviour
             throw;
         }
 
-        Debug.Log(storyName);
+        /*
+        Debug.Log(StoryName);
 
         Debug.Log(DeserializedStory.StartingThumbnailId);
         Debug.Log(DeserializedStory.Thumbnails[0]);
@@ -31,7 +34,7 @@ public class Deserialize : MonoBehaviour
         Debug.Log(DeserializedStory.Thumbnails[0].Choices[0]);
         Debug.Log(DeserializedStory.Thumbnails[0].Choices[0].Description);
         Debug.Log(DeserializedStory.Thumbnails[0].Choices[0].ThumbnailLinkId);
-
+        */
         return DeserializedStory;
     }
 }

@@ -16,7 +16,7 @@ public class Choice {
 
     // The content of the choice (clicked label)
     public string Description;
-    // The id of the thumbnail this choice send
+    // The id of the thumbnail this choice sends to
     public string ThumbnailLinkId;
     // The list of item need to be able to select this choice
     public List<string> NeededItemsId;

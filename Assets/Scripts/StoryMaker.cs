@@ -109,7 +109,8 @@ public class StoryMaker : MonoBehaviour
         try
         {
             Debug.Log(Application.persistentDataPath + "/" + title + ".json");
-            //System.IO.File.WriteAllText(Application.persistentDataPath + "/" + title + ".json", story);
+            System.IO.Directory.CreateDirectory(Application.persistentDataPath + "/" + title);
+            File.WriteAllText(Application.persistentDataPath + "/" + title + "/" + title + ".json", story);
         }
         catch (Exception e)
         {
@@ -137,7 +138,7 @@ Structure de données imposée (Story, Thumbnail, Choice, Item).
 Total : 20 points
 
 1. Chargement et sélection des histoires (5 pts)
-- Affichage d’une liste d’histoires (titre + image si possible)
+DONE Affichage d’une liste d’histoires (titre + image si possible)
 - Possibilité de sélectionner une histoire et la lancer
 DONE Chargement des données depuis un fichier local
 - Bonus si l’histoire est récupérée dynamiquement (Internet, dépôt distant…)

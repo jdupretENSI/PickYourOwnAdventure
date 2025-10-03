@@ -15,7 +15,7 @@ public class Thumbnail {
         Choices = choices ?? throw new ArgumentNullException(nameof(choices));
     }
 
-    // The Id of the thumbnail for reference
+    // The ID of the thumbnail for reference
     public string Id;
     // The name of the image of the thumbnail inside the folder with the extension
     // For example : "toto.png"
