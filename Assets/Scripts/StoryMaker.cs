@@ -123,7 +123,7 @@ public class StoryMaker : MonoBehaviour
     void Awake()
     {
         //NewStory();
-        Story story = Deserialize.ReadStory("First story");
+        //Story story = Deserialize.ReadStory("First story");
         //SetupStory(story);
     }
 }

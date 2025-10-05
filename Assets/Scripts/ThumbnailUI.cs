@@ -20,16 +20,31 @@ public class ThumbnailUI : MonoBehaviour {
     }
 
     private void LoadThumbnail(Thumbnail thumbnail) {
-        //Image.sprite = thumbnail.ImageName;
+        
+        
+        Image.sprite = Resources.Load<Sprite>(thumbnail.ImageName);
         Description.text = thumbnail.Description;
         ClearChoices();
-        foreach (Choice choice in thumbnail.Choices) {
+        foreach (Choice choice in thumbnail.Choices) 
+        {
             GameObject instantiate = Instantiate(ButtonChoicePrefab, ChoiceContent);
-            instantiate.GetComponentInChildren<TMP_Text>().text = choice.Description;
-            instantiate.GetComponent<Button>().onClick.AddListener(() => {
-                Thumbnail linkedThumbnail = _story.Thumbnails.Find(t => t.Id == choice.ThumbnailLinkId);
-                LoadThumbnail(linkedThumbnail);
-            });
+            var button = instantiate.GetComponent<Button>();
+            var text = instantiate.GetComponentInChildren<TMP_Text>();
+    
+            text.text = choice.Description;
+    
+            // CHECK INVENTORY REQUIREMENTS
+            bool hasRequiredItems = GameManager.HasRequiredItems(choice.NeededItemsId);
+            button.interactable = hasRequiredItems;
+    
+            if (hasRequiredItems)
+            {
+                button.onClick.AddListener(() => {
+                    GameManager.ProcessChoiceEffects(choice); // APPLY ITEM EFFECTS
+                    Thumbnail linkedThumbnail = _story.Thumbnails.Find(t => t.Id == choice.ThumbnailLinkId);
+                    LoadThumbnail(linkedThumbnail);
+                });
+            }
         }
     }
 

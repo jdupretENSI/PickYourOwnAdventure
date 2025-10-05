@@ -1102,14 +1102,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1826170224}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c1908c88acc77a45b86dee2d68908d5, type: 3}
+  m_Script: {fileID: 11500000, guid: d2c03602f338ac644a527938d37dd430, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SceneBuilder
-  Title: {fileID: 1540573738}
-  Sprite: {fileID: 684843250}
-  ButtonPanel: {fileID: 1456713779}
-  ChoicePrefab: {fileID: 1996080750761313597, guid: ac97264821395c14489ecc14326587aa, type: 3}
-  ChoiceParent: {fileID: 1456713780}
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  ThumbnailUI: {fileID: 0}
+  StoryPath: 
 --- !u!1 &1880702253
 GameObject:
   m_ObjectHideFlags: 0
