@@ -51,15 +51,23 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
     
 
     [ContextMenu("SaveGame")]
-    private void SaveGame() {
-        string json = JsonUtility.ToJson(_currentThumbnail);
-        File.WriteAllText(StoryFolder, json);
+    public void SaveGame(Thumbnail CurrentThumbnail) {
+        string json = JsonUtility.ToJson(CurrentThumbnail);
+        File.WriteAllText(StoryFolder + "/" + "save" + ".json", json);
     }
     
     [ContextMenu("LoadLastGame")]
     private void LoadLastGame() {
+        //Get teh save file
         string save = File.ReadAllText(StoryFolder + "/" + "save" + ".json");
         _currentThumbnail = JsonUtility.FromJson<Thumbnail>(save);
+        //get the story itself
+        string json = File.ReadAllText(FullStoryPath);
+        _currentStory = JsonUtility.FromJson<Story>(json);
+        
+        //And we want the story to start from where the player left off
+        _currentThumbnail = _currentStory.Thumbnails.Find(t => t.Id == _currentThumbnail.Id);
+        
         ThumbnailUI.LoadThumbnail(_currentThumbnail);
     }
     
@@ -73,20 +81,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
         return File.Exists(StoryFolder + "/" + "save" + ".json");
     }
     
-    [Serializable]
-    public class SaveData {
-        public string CurrentThumbnailId;
-        public List<string> InventoryItemIds;
-    }
-
-    public void SaveProgress(string currentThumbnailId) {
-        SaveData save = new SaveData {
-            CurrentThumbnailId = currentThumbnailId,
-            InventoryItemIds = _currentInventory.Select(item => item.Id).ToList()
-        };
-        File.WriteAllText(StoryFolder + "/save.json", 
-            JsonUtility.ToJson(save));
-    }
     
     private static List<Item> _currentInventory = new List<Item>();
     

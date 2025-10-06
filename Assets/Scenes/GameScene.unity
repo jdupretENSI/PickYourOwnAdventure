@@ -582,7 +582,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   ThumbnailUI: {fileID: 1826170230}
-  StoryPath: 
 --- !u!4 &1482435430
 Transform:
   m_ObjectHideFlags: 0
@@ -742,6 +741,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1456713780}
     m_Modifications:
+    - target: {fileID: 634988863136891653, guid: ac97264821395c14489ecc14326587aa, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1996080750761313597, guid: ac97264821395c14489ecc14326587aa, type: 3}
       propertyPath: m_Name
       value: ChoicePrefab (3)
@@ -844,6 +847,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1456713780}
     m_Modifications:
+    - target: {fileID: 634988863136891653, guid: ac97264821395c14489ecc14326587aa, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1996080750761313597, guid: ac97264821395c14489ecc14326587aa, type: 3}
       propertyPath: m_Name
       value: ChoicePrefab
@@ -1224,6 +1231,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1456713780}
     m_Modifications:
+    - target: {fileID: 634988863136891653, guid: ac97264821395c14489ecc14326587aa, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1996080750761313597, guid: ac97264821395c14489ecc14326587aa, type: 3}
       propertyPath: m_Name
       value: ChoicePrefab (2)
@@ -1326,6 +1337,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1456713780}
     m_Modifications:
+    - target: {fileID: 634988863136891653, guid: ac97264821395c14489ecc14326587aa, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1996080750761313597, guid: ac97264821395c14489ecc14326587aa, type: 3}
       propertyPath: m_Name
       value: ChoicePrefab (1)

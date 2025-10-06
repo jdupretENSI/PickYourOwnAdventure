@@ -14,7 +14,6 @@ public class ThumbnailUI : MonoBehaviour {
     public Transform ChoiceContent;
 
     private Story _story;
-    private string _storyFolderPath;
 
     public void Setup(Story story, string storyPath = null) {
         _story = story;
@@ -28,11 +27,11 @@ public class ThumbnailUI : MonoBehaviour {
 
     public void LoadThumbnail(Thumbnail thumbnail) {
         //Any time a new thumbnail is loaded a save file should be updated.
-        if (thumbnail != null) GameManager.Instance.SaveProgress(thumbnail.Id);
+        if (thumbnail != null) GameManager.Instance.SaveGame(thumbnail);
         
         
         // Load image from persistent data path
-        string imagePath = Path.Combine(_storyFolderPath, thumbnail.ImageName + ".png");
+        string imagePath = Path.Combine(Application.persistentDataPath, "TheLostTemple", thumbnail.ImageName + ".png");
         LoadImageFromPath(imagePath);
         
         Description.text = thumbnail.Description;
@@ -78,7 +77,6 @@ public class ThumbnailUI : MonoBehaviour {
         else
         {
             Debug.LogWarning($"Image not found at path: {imagePath}");
-            // You might want to set a default image here
         }
     }
 
