@@ -38,26 +38,29 @@ public class StoriesLister : MonoBehaviour
     //Each story should use the Story title as its name
     //DONE if possible add the thumbnail in the story to the story.
 
+// In StoriesLister.cs, update the StoryLister method:
     public void StoryLister(List<Story> storyList)
     {
         foreach (Story story in storyList)
         {
             // Instantiate the prefab
             var buttonInstance = Instantiate(StoryPrefab, storyParent);
-            
+        
             // Get the StoryButtonUI component from the instantiated prefab
             StoryButtonUI storyButton = buttonInstance.GetComponent<StoryButtonUI>();
-            
+        
             if (storyButton != null)
             {
-                // Call Setup on the specific instance
-                storyButton.Setup(story.StoryName, "RPG Avatars people icons (bg)");
+                // Determine story folder path
+                string storyFolderPath = Path.Combine(Application.persistentDataPath, story.StoryName);
+            
+                // Call Setup with story name, folder path, and image name
+                storyButton.Setup(story.StoryName, storyFolderPath, story.ImageName);
             }
             else
             {
                 Debug.LogError("StoryButtonUI component not found on prefab!");
             }
         }
-        
     }
 }

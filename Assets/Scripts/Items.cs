@@ -13,7 +13,7 @@ public class Item
         Description = description ?? throw new ArgumentNullException(nameof(description));
     }
 
-    // The Id of the item for reference
+    // The ID of the item for reference
     public string Id;
     // The name of the item (for label)
     public string ItemName;

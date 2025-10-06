@@ -3,43 +3,74 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using Utils;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviourSingleton<GameManager> {
 
     public ThumbnailUI ThumbnailUI;
-    public static Story CurrentStory;
-    public string StoryPath;
+
+    //Assuming the story folder and title are named the same this should allow me to use them freely.
+    private string StoryFolder;
+    private string StoryTitle;
+    private string FullStoryPath;
+    private Story _currentStory;
+    private Thumbnail _currentThumbnail;
     
-    private void Start() {
-        StoryPath = Application.persistentDataPath + "/First story/First story.json";
-        Load();
-    
+// In GameManager.cs, update the Start method:
+    private void Start()
+    {
+        //TODO I need to find a way to make this dynamic.
+        StoryTitle = "TheLostTemple";
+        StoryFolder = Application.persistentDataPath + "/" + StoryTitle;
+        FullStoryPath = StoryFolder + "/" + StoryTitle + ".json";
+
+        if (LastGameExist()) LoadLastGame(); else LoadStory();
+
         // If I want to start a specific story directly:
-        if (CurrentStory == null) {
+        if (_currentStory == null) {
             // Load a story from your StoriesLister or create one
-            CurrentStory = Deserialize.ReadStory(StoryPath);
+            _currentStory = Deserialize.ReadStory(FullStoryPath);
         }
-    
-        ThumbnailUI.Setup(CurrentStory);
+
+        // Pass the story path to ThumbnailUI
+        ThumbnailUI.Setup(_currentStory, FullStoryPath);
     }
 
-    [ContextMenu("Save")]
-    private void Save() {
-        string json = JsonUtility.ToJson(CurrentStory);
-        File.WriteAllText(StoryPath, json);
+    [ContextMenu("NewSave")]
+    private void NewSave() {
+        string json = JsonUtility.ToJson(_currentStory);
+        File.WriteAllText(FullStoryPath, json);
     }
     
-    [ContextMenu("Load")]
-    private void Load() {
-        string json = File.ReadAllText(StoryPath);
-        CurrentStory = JsonUtility.FromJson<Story>(json);
-        Debug.Log(CurrentStory);
-        ThumbnailUI.Setup(CurrentStory);
+    [ContextMenu("LoadStory")]
+    private void LoadStory() {
+        string json = File.ReadAllText(FullStoryPath);
+        _currentStory = JsonUtility.FromJson<Story>(json);
+        ThumbnailUI.Setup(_currentStory);
+    }
+    
+
+    [ContextMenu("SaveGame")]
+    private void SaveGame() {
+        string json = JsonUtility.ToJson(_currentThumbnail);
+        File.WriteAllText(StoryFolder, json);
+    }
+    
+    [ContextMenu("LoadLastGame")]
+    private void LoadLastGame() {
+        string save = File.ReadAllText(StoryFolder + "/" + "save" + ".json");
+        _currentThumbnail = JsonUtility.FromJson<Thumbnail>(save);
+        ThumbnailUI.LoadThumbnail(_currentThumbnail);
     }
     
     [ContextMenu("Reset")]
     private void Reset() {
-        CurrentStory = null;
+        _currentStory = null;
+    }
+    
+    private bool LastGameExist()
+    {
+        return File.Exists(StoryFolder + "/" + "save" + ".json");
     }
     
     [Serializable]
@@ -48,23 +79,23 @@ public class GameManager : MonoBehaviour {
         public List<string> InventoryItemIds;
     }
 
-    public static void SaveProgress(string currentThumbnailId) {
+    public void SaveProgress(string currentThumbnailId) {
         SaveData save = new SaveData {
             CurrentThumbnailId = currentThumbnailId,
             InventoryItemIds = _currentInventory.Select(item => item.Id).ToList()
         };
-        File.WriteAllText(Application.persistentDataPath + "/save.json", 
+        File.WriteAllText(StoryFolder + "/save.json", 
             JsonUtility.ToJson(save));
     }
     
     private static List<Item> _currentInventory = new List<Item>();
     
-    public static bool HasRequiredItems(List<string> neededItems)
+    public bool HasRequiredItems(List<string> neededItems)
     {
         return neededItems.All(needed => _currentInventory.Any(item => item.Id == needed));
     }
     
-    public static void ProcessChoiceEffects(Choice choice)
+    public void ProcessChoiceEffects(Choice choice)
     {
         // Remove taken items
         foreach (string takenId in choice.TakenItemsId)
@@ -75,7 +106,7 @@ public class GameManager : MonoBehaviour {
         // Add given items (you'll need to reference the story's item list)
         foreach (string givenId in choice.GivenItemsId)
         {
-            var itemToAdd = CurrentStory.Items.Find(i => i.Id == givenId);
+            var itemToAdd = _currentStory.Items.Find(i => i.Id == givenId);
             if (itemToAdd != null) _currentInventory.Add(itemToAdd);
         }
     }
