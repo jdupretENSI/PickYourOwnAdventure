@@ -14,7 +14,6 @@ public class ThumbnailUI : MonoBehaviour {
     public TMP_Text Description;
     public Transform Inventory;
     public Transform ChoiceContent;
-    public AudioSource CurrentAudioSource;
     
     [Header("Audio References")]
     public AudioSource musicAudioSource;
@@ -41,19 +40,38 @@ public class ThumbnailUI : MonoBehaviour {
         string imagePath = Path.Combine(Application.persistentDataPath, "TheLostTemple", thumbnail.ImageName + ".png");
         LoadImageFromPath(imagePath);
         
-        //TODO SFX and Music.
-        //SFX plays ONCE only when you get onto this thumbnail.
-        if (!string.IsNullOrEmpty(thumbnail.SfxName))
+        //SFX and Music.
+        if(AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.SfxName)) != null)
         {
-            _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName, Path.GetExtension(Path.Combine(_StoryFolder, thumbnail.SfxName)).ToLower());
-            StartCoroutine(LoadAudioCoroutine(_AudioPath, sfxAudioSource, false));
+            //Normally the check under should stop things, but I think the thumbnails were given names even if there was no file associated.
+            //SFX plays ONCE only when you get onto this thumbnail.
+            if (!string.IsNullOrEmpty(thumbnail.SfxName))
+            {
+                string AudioExtention = AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.SfxName));
+                _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName + AudioExtention);
+                StartCoroutine(LoadAudioCoroutine(_AudioPath, sfxAudioSource, false));
+            }
         }
-        
-        //Music plays on loop whilst on the thumbnail.
-        if (!string.IsNullOrEmpty(thumbnail.MusicName))
+        else
         {
-            _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName, Path.GetExtension(Path.Combine(_StoryFolder, thumbnail.MusicName)).ToLower());
-            StartCoroutine(LoadAudioCoroutine(_AudioPath, musicAudioSource, true));
+            sfxAudioSource.Stop();
+        }
+
+        if (AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.MusicName)) != null)
+        {
+            //Same problem here
+            //Music plays on loop whilst on the thumbnail.
+            if (!string.IsNullOrEmpty(thumbnail.MusicName))
+            {
+                string AudioExtention = AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.MusicName));
+                _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName + AudioExtention);
+                StartCoroutine(LoadAudioCoroutine(_AudioPath, musicAudioSource, true));
+            }
+            
+        }
+        else
+        {
+            musicAudioSource.Stop();
         }
         
         Description.text = thumbnail.Description;
@@ -111,7 +129,7 @@ public class ThumbnailUI : MonoBehaviour {
             : "file://" + filePath;
         
         
-        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(audioPath, GetAudioType(filePath)))
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(audioPath, AudioHandler.GetAudioType(filePath)))
         {
             yield return www.SendWebRequest();
             
@@ -127,19 +145,6 @@ public class ThumbnailUI : MonoBehaviour {
                 Debug.LogWarning($"Audio file not found: {filePath}");
             }
         }
-    }
-    
-    private AudioType GetAudioType(string filePath)
-    {
-        string extension = Path.GetExtension(filePath).ToLower();
-        return extension switch
-        {
-            ".wav" => AudioType.WAV,
-            ".mp3" => AudioType.MPEG,
-            ".ogg" => AudioType.OGGVORBIS,
-            ".aiff" or ".aif" => AudioType.AIFF,
-            _ => AudioType.UNKNOWN
-        };
     }
     
 

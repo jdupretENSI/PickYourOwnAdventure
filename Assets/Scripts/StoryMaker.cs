@@ -139,7 +139,7 @@ Total : 20 points
 
 1. Chargement et sélection des histoires (5 pts)
 DONE Affichage d’une liste d’histoires (titre + image si possible)
-- Possibilité de sélectionner une histoire et la lancer
+TODO Possibilité de sélectionner une histoire et la lancer
 DONE Chargement des données depuis un fichier local
 TODO Bonus si l’histoire est récupérée dynamiquement (Internet, dépôt distant…)
 TODO Bonne gestion des erreurs : fichier absent, image manquante, JSON mal formé, etc.
