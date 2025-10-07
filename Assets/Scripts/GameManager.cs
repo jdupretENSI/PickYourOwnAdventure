@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
     private string FullStoryPath;
     private Story _currentStory;
     private Thumbnail _currentThumbnail;
+    private SaveState _currentSaveState = new SaveState();
+    private static List<Item> _currentInventory = new List<Item>();
     
 // In GameManager.cs, update the Start method:
     private void Start()
@@ -25,15 +27,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
         FullStoryPath = StoryFolder + "/" + StoryTitle + ".json";
 
         if (LastGameExist()) LoadLastGame(); else LoadStory();
+        
 
-        // If I want to start a specific story directly:
-        if (_currentStory == null) {
-            // Load a story from your StoriesLister or create one
-            _currentStory = Deserialize.ReadStory(FullStoryPath);
-        }
-
-        // Pass the story path to ThumbnailUI
-        ThumbnailUI.Setup(_currentStory, FullStoryPath);
     }
 
     [ContextMenu("NewSave")]
@@ -46,24 +41,39 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
     private void LoadStory() {
         string json = File.ReadAllText(FullStoryPath);
         _currentStory = JsonUtility.FromJson<Story>(json);
-        ThumbnailUI.Setup(_currentStory);
+        ThumbnailUI.Setup(_currentStory, FullStoryPath);
     }
     
 
     [ContextMenu("SaveGame")]
-    public void SaveGame(Thumbnail CurrentThumbnail) {
-        string json = JsonUtility.ToJson(CurrentThumbnail);
+    public void SaveGame(Thumbnail currentThumbnail) 
+    {
+        _currentThumbnail = currentThumbnail;
+    
+        // Direct assignment - much clearer
+        _currentSaveState.thumbnail = _currentThumbnail;
+        _currentSaveState.items = _currentInventory;
+    
+        string json = JsonUtility.ToJson(_currentSaveState);
         File.WriteAllText(StoryFolder + "/" + "save" + ".json", json);
     }
     
     [ContextMenu("LoadLastGame")]
     private void LoadLastGame() {
-        //Get teh save file
+        //Get the save file
         string save = File.ReadAllText(StoryFolder + "/" + "save" + ".json");
-        _currentThumbnail = JsonUtility.FromJson<Thumbnail>(save);
-        //get the story itself
+        SaveState LastSave = JsonUtility.FromJson<SaveState>(save);
+        //Load last thumbnail used
+        _currentThumbnail = LastSave.thumbnail;
+        //Get the story itself
         string json = File.ReadAllText(FullStoryPath);
         _currentStory = JsonUtility.FromJson<Story>(json);
+        
+        //We set up the entire story
+        ThumbnailUI.Setup(_currentStory);
+        
+        //Give the items the player had last game.
+        _currentInventory = LastSave.items;
         
         //And we want the story to start from where the player left off
         _currentThumbnail = _currentStory.Thumbnails.Find(t => t.Id == _currentThumbnail.Id);
@@ -82,7 +92,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
     }
     
     
-    private static List<Item> _currentInventory = new List<Item>();
     
     public bool HasRequiredItems(List<string> neededItems)
     {
