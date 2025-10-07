@@ -148,7 +148,7 @@ TODO Bonne gestion des erreurs : fichier absent, image manquante, JSON mal form�
 DONE Lecture correcte du JSON (Story avec ses Thumbnails, Choices, etc.)
 DONE Navigation dynamique entre les scènes de l’histoire (Thumbnail.Id et Choice.ThumbnailLinkId)
 DONE Utilisation correcte des champs dans Choice (naviguer vers une autre vignette, utiliser ou donner des items)
-TODO Utilisation des champs médias : images, musiques, sons (si présents)
+DONE Utilisation des champs médias : images, musiques, sons (si présents)
 
 3. Lecture interactive et logique de jeu (5 pts)
 DONE Texte de la scène bien affiché (Thumbnail.Description)
