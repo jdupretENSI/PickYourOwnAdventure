@@ -1,7 +1,9 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using UnityEngine.Networking;
 
 public class ThumbnailUI : MonoBehaviour {
 
@@ -12,15 +14,20 @@ public class ThumbnailUI : MonoBehaviour {
     public TMP_Text Description;
     public Transform Inventory;
     public Transform ChoiceContent;
-
+    public AudioSource CurrentAudioSource;
+    
+    [Header("Audio References")]
+    public AudioSource musicAudioSource;
+    public AudioSource sfxAudioSource;
+    
+    private string _StoryFolder;
+    private string _AudioPath;
     private Story _story;
 
-    public void Setup(Story story, string storyPath = null) {
+    public void Setup(Story story, string storyPath) {
         _story = story;
-
-        // Determine the story folder path
-        if (string.IsNullOrEmpty(storyPath)) return;
         
+        _StoryFolder = storyPath;
         Thumbnail firstThumbnail = story.Thumbnails.Find(t => t.Id == story.StartingThumbnailId);
         LoadThumbnail(firstThumbnail);
     }
@@ -33,6 +40,21 @@ public class ThumbnailUI : MonoBehaviour {
         // Load image from persistent data path
         string imagePath = Path.Combine(Application.persistentDataPath, "TheLostTemple", thumbnail.ImageName + ".png");
         LoadImageFromPath(imagePath);
+        
+        //TODO SFX and Music.
+        //SFX plays ONCE only when you get onto this thumbnail.
+        if (!string.IsNullOrEmpty(thumbnail.SfxName))
+        {
+            _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName, Path.GetExtension(Path.Combine(_StoryFolder, thumbnail.SfxName)).ToLower());
+            StartCoroutine(LoadAudioCoroutine(_AudioPath, sfxAudioSource, false));
+        }
+        
+        //Music plays on loop whilst on the thumbnail.
+        if (!string.IsNullOrEmpty(thumbnail.MusicName))
+        {
+            _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName, Path.GetExtension(Path.Combine(_StoryFolder, thumbnail.MusicName)).ToLower());
+            StartCoroutine(LoadAudioCoroutine(_AudioPath, musicAudioSource, true));
+        }
         
         Description.text = thumbnail.Description;
         ClearChoices();
@@ -79,6 +101,47 @@ public class ThumbnailUI : MonoBehaviour {
             Debug.LogWarning($"Image not found at path: {imagePath}");
         }
     }
+
+    private IEnumerator LoadAudioCoroutine(string filePath, AudioSource targetSource, bool loop)
+    {
+        //Checks if we are on windows and assigns the correct path.
+        string audioPath = (Application.platform == RuntimePlatform.WindowsPlayer || 
+                            Application.platform == RuntimePlatform.WindowsEditor)
+            ? "file:///" + filePath.Replace("\\", "/")
+            : "file://" + filePath;
+        
+        
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(audioPath, GetAudioType(filePath)))
+        {
+            yield return www.SendWebRequest();
+            
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+                targetSource.clip = clip;
+                targetSource.loop = loop;
+                targetSource.Play();
+            }
+            else
+            {
+                Debug.LogWarning($"Audio file not found: {filePath}");
+            }
+        }
+    }
+    
+    private AudioType GetAudioType(string filePath)
+    {
+        string extension = Path.GetExtension(filePath).ToLower();
+        return extension switch
+        {
+            ".wav" => AudioType.WAV,
+            ".mp3" => AudioType.MPEG,
+            ".ogg" => AudioType.OGGVORBIS,
+            ".aiff" or ".aif" => AudioType.AIFF,
+            _ => AudioType.UNKNOWN
+        };
+    }
+    
 
     private void ClearChoices() {
         foreach (Transform child in ChoiceContent) {

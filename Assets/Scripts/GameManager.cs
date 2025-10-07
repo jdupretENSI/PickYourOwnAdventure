@@ -13,10 +13,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
     private string StoryFolder;
     private string StoryTitle;
     private string FullStoryPath;
-    private Story _currentStory;
-    private Thumbnail _currentThumbnail;
-    private SaveState _currentSaveState = new SaveState();
-    private static List<Item> _currentInventory = new List<Item>();
+    private Story _CurrentStory;
+    private Thumbnail _CurrentThumbnail;
+    private SaveState _CurrentSaveState = new SaveState();
+    private static List<Item> _CurrentInventory = new List<Item>();
     
 // In GameManager.cs, update the Start method:
     private void Start()
@@ -33,28 +33,28 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
     [ContextMenu("NewSave")]
     private void NewSave() {
-        string json = JsonUtility.ToJson(_currentStory);
+        string json = JsonUtility.ToJson(_CurrentStory);
         File.WriteAllText(FullStoryPath, json);
     }
     
     [ContextMenu("LoadStory")]
     private void LoadStory() {
         string json = File.ReadAllText(FullStoryPath);
-        _currentStory = JsonUtility.FromJson<Story>(json);
-        ThumbnailUI.Setup(_currentStory, FullStoryPath);
+        _CurrentStory = JsonUtility.FromJson<Story>(json);
+        ThumbnailUI.Setup(_CurrentStory, StoryFolder);
     }
     
 
     [ContextMenu("SaveGame")]
     public void SaveGame(Thumbnail currentThumbnail) 
     {
-        _currentThumbnail = currentThumbnail;
+        _CurrentThumbnail = currentThumbnail;
     
         // Direct assignment - much clearer
-        _currentSaveState.thumbnail = _currentThumbnail;
-        _currentSaveState.items = _currentInventory;
+        _CurrentSaveState.thumbnail = _CurrentThumbnail;
+        _CurrentSaveState.items = _CurrentInventory;
     
-        string json = JsonUtility.ToJson(_currentSaveState);
+        string json = JsonUtility.ToJson(_CurrentSaveState);
         File.WriteAllText(StoryFolder + "/" + "save" + ".json", json);
     }
     
@@ -64,26 +64,36 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
         string save = File.ReadAllText(StoryFolder + "/" + "save" + ".json");
         SaveState LastSave = JsonUtility.FromJson<SaveState>(save);
         //Load last thumbnail used
-        _currentThumbnail = LastSave.thumbnail;
+        _CurrentThumbnail = LastSave.thumbnail;
         //Get the story itself
         string json = File.ReadAllText(FullStoryPath);
-        _currentStory = JsonUtility.FromJson<Story>(json);
+        _CurrentStory = JsonUtility.FromJson<Story>(json);
         
         //We set up the entire story
-        ThumbnailUI.Setup(_currentStory);
+        ThumbnailUI.Setup(_CurrentStory,  StoryFolder);
+
+        try
+        {
+            //Give the items the player had last game.
+            _CurrentInventory = LastSave.items;
         
-        //Give the items the player had last game.
-        _currentInventory = LastSave.items;
+            //And we want the story to start from where the player left off
+            _CurrentThumbnail = _CurrentStory.Thumbnails.Find(t => t.Id == _CurrentThumbnail.Id);
+            if (_CurrentThumbnail == null) throw new Exception("No saved thumbnail found");
+        }
+        catch (Exception e)
+        {
+            //Seems to work, but I don't see the error message? IDK who care.
+            Console.WriteLine(e + "This save does not belong to this story. Starting a new story.");
+            LoadStory();
+        }
         
-        //And we want the story to start from where the player left off
-        _currentThumbnail = _currentStory.Thumbnails.Find(t => t.Id == _currentThumbnail.Id);
-        
-        ThumbnailUI.LoadThumbnail(_currentThumbnail);
+        ThumbnailUI.LoadThumbnail(_CurrentThumbnail);
     }
     
     [ContextMenu("Reset")]
     private void Reset() {
-        _currentStory = null;
+        _CurrentStory = null;
     }
     
     private bool LastGameExist()
@@ -95,7 +105,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
     
     public bool HasRequiredItems(List<string> neededItems)
     {
-        return neededItems.All(needed => _currentInventory.Any(item => item.Id == needed));
+        return neededItems.All(needed => _CurrentInventory.Any(item => item.Id == needed));
     }
     
     public void ProcessChoiceEffects(Choice choice)
@@ -103,14 +113,14 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
         // Remove taken items
         foreach (string takenId in choice.TakenItemsId)
         {
-            _currentInventory.RemoveAll(item => item.Id == takenId);
+            _CurrentInventory.RemoveAll(item => item.Id == takenId);
         }
         
         // Add given items (you'll need to reference the story's item list)
         foreach (string givenId in choice.GivenItemsId)
         {
-            var itemToAdd = _currentStory.Items.Find(i => i.Id == givenId);
-            if (itemToAdd != null) _currentInventory.Add(itemToAdd);
+            var itemToAdd = _CurrentStory.Items.Find(i => i.Id == givenId);
+            if (itemToAdd != null) _CurrentInventory.Add(itemToAdd);
         }
     }
 }

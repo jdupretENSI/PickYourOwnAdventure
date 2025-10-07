@@ -141,38 +141,38 @@ Total : 20 points
 DONE Affichage d’une liste d’histoires (titre + image si possible)
 - Possibilité de sélectionner une histoire et la lancer
 DONE Chargement des données depuis un fichier local
-- Bonus si l’histoire est récupérée dynamiquement (Internet, dépôt distant…)
-- Bonne gestion des erreurs : fichier absent, image manquante, JSON mal formé, etc.
+TODO Bonus si l’histoire est récupérée dynamiquement (Internet, dépôt distant…)
+TODO Bonne gestion des erreurs : fichier absent, image manquante, JSON mal formé, etc.
 
 2. Intégration de la structure fournie (4 pts)
 DONE Lecture correcte du JSON (Story avec ses Thumbnails, Choices, etc.)
-- Navigation dynamique entre les scènes de l’histoire (Thumbnail.Id et Choice.ThumbnailLinkId)
-- Utilisation correcte des champs dans Choice (naviguer vers une autre vignette, utiliser ou donner des items)
-- Utilisation des champs médias : images, musiques, sons (si présents)
+DONE Navigation dynamique entre les scènes de l’histoire (Thumbnail.Id et Choice.ThumbnailLinkId)
+DONE Utilisation correcte des champs dans Choice (naviguer vers une autre vignette, utiliser ou donner des items)
+TODO Utilisation des champs médias : images, musiques, sons (si présents)
 
 3. Lecture interactive et logique de jeu (5 pts)
-- Texte de la scène bien affiché (Thumbnail.Description)
-- Affichage des choix disponibles, navigation fluide entre les scènes
-- Gestion complète de l’inventaire :
-   - Les choix peuvent être désactivés ou cachés si le joueur ne possède pas les objets requis (NeededItemsId)
-   - Les objets sont bien donnés (GivenItemsId) ou retirés (TakenItemsId) en fonction des choix
-- L’histoire se termine clairement quand il n’y a plus de choix
+DONE Texte de la scène bien affiché (Thumbnail.Description)
+DONE Affichage des choix disponibles, navigation fluide entre les scènes
+DONE Gestion complète de l’inventaire :
+   DONE Les choix peuvent être désactivés ou cachés si le joueur ne possède pas les objets requis (NeededItemsId)
+   DONE Les objets sont bien donnés (GivenItemsId) ou retirés (TakenItemsId) en fonction des choix
+TODO L’histoire se termine clairement quand il n’y a plus de choix
 
 4. Sauvegarde et reprise (4 pts)
-- Possibilité de sauvegarder l’état du jeu : vignette actuelle + inventaire
-- Reprise correcte à partir d’une sauvegarde
-- Format propre (JSON lisible par exemple)
-- Bouton ou système de reprise automatique proposé à l’utilisateur
+DONE Possibilité de sauvegarder l’état du jeu : vignette actuelle + inventaire
+DONE Reprise correcte à partir d’une sauvegarde
+DONE Format propre (JSON lisible par exemple)
+TODO Bouton ou système de reprise automatique proposé à l’utilisateur
 
 5. Interface mobile et input (2 pts)
-- Utilisation du nouvel Input System Unity
-- UI adaptée au mobile : responsive, lisible, claire, utilisable au tactile
+TODO Utilisation du nouvel Input System Unity
+TODO UI adaptée au mobile : responsive, lisible, claire, utilisable au tactile
 
 6. Qualité du code et présentation (1 pt)
-- Code organisé, lisible, avec des fichiers séparés pour les rôles importants (chargement, logique, UI…)
-- Expérience utilisateur soignée : transitions, effets visuels, sons, feedback sur les actions
+TODO Code organisé, lisible, avec des fichiers séparés pour les rôles importants (chargement, logique, UI…)
+TODO Expérience utilisateur soignée : transitions, effets visuels, sons, feedback sur les actions
 
 Bonus (jusqu’à +2 pts)
-- Sauvegardes multiples, filtres sur les histoires, animations, effets audio soignés, système de téléchargement en ligne, etc.
+TODO Sauvegardes multiples, filtres sur les histoires, animations, effets audio soignés, système de téléchargement en ligne, etc.
  * 
  */
