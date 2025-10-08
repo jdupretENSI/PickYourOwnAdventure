@@ -7,24 +7,28 @@ using UnityEngine.Networking;
 
 public class ThumbnailUI : MonoBehaviour {
 
-    public GameObject ButtonChoicePrefab;
     
     [Header("References")]
     public Image Image;
     public TMP_Text Description;
     public Transform Inventory;
     public Transform ChoiceContent;
+    public GameObject ButtonChoicePrefab;
     
     [Header("Audio References")]
-    public AudioSource musicAudioSource;
-    public AudioSource sfxAudioSource;
+    public AudioSource MusicAudioSource;
+    public AudioSource SFXAudioSource;
+
+    [Header("End Screen References")]
+    public GameObject RestartPrefab;
+    public GameObject QuitPrefab;
     
     private string _StoryFolder;
     private string _AudioPath;
-    private Story _story;
+    private Story _Story;
 
     public void Setup(Story story, string storyPath) {
-        _story = story;
+        _Story = story;
         
         _StoryFolder = storyPath;
         Thumbnail firstThumbnail = story.Thumbnails.Find(t => t.Id == story.StartingThumbnailId);
@@ -38,7 +42,7 @@ public class ThumbnailUI : MonoBehaviour {
         
         // Load image from persistent data path
         string imagePath = Path.Combine(Application.persistentDataPath, "TheLostTemple", thumbnail.ImageName + ".png");
-        LoadImageFromPath(imagePath);
+        ImageHandler.LoadImageFromPath(Image ,imagePath);
         
         //SFX and Music.
         if(AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.SfxName)) != null)
@@ -49,12 +53,12 @@ public class ThumbnailUI : MonoBehaviour {
             {
                 string AudioExtention = AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.SfxName));
                 _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName + AudioExtention);
-                StartCoroutine(LoadAudioCoroutine(_AudioPath, sfxAudioSource, false));
+                StartCoroutine(LoadAudioCoroutine(_AudioPath, SFXAudioSource, false));
             }
         }
         else
         {
-            sfxAudioSource.Stop();
+            SFXAudioSource.Stop();
         }
 
         if (AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.MusicName)) != null)
@@ -65,17 +69,27 @@ public class ThumbnailUI : MonoBehaviour {
             {
                 string AudioExtention = AudioHandler.GetAudioTypeString(Path.Combine(_StoryFolder, thumbnail.MusicName));
                 _AudioPath = Path.Combine(_StoryFolder, thumbnail.SfxName + AudioExtention);
-                StartCoroutine(LoadAudioCoroutine(_AudioPath, musicAudioSource, true));
+                StartCoroutine(LoadAudioCoroutine(_AudioPath, MusicAudioSource, true));
             }
             
         }
         else
         {
-            musicAudioSource.Stop();
+            MusicAudioSource.Stop();
         }
         
         Description.text = thumbnail.Description;
         ClearChoices();
+        //Debug.Log(thumbnail.Choices);
+
+        if (thumbnail.Choices.Count == 0)
+        {
+            //Game over screen. Restart? or Quit?
+            
+            Instantiate(RestartPrefab , ChoiceContent);
+            Instantiate(QuitPrefab, ChoiceContent);
+            
+        }
         foreach (Choice choice in thumbnail.Choices) 
         {
             GameObject instantiate = Instantiate(ButtonChoicePrefab, ChoiceContent);
@@ -84,7 +98,7 @@ public class ThumbnailUI : MonoBehaviour {
     
             text.text = choice.Description;
     
-            // CHECK INVENTORY REQUIREMENTS
+            // We check if the player has the items needed to press a button, if not it is deactivated.
             bool hasRequiredItems = GameManager.Instance.HasRequiredItems(choice.NeededItemsId);
             button.interactable = hasRequiredItems;
     
@@ -92,32 +106,12 @@ public class ThumbnailUI : MonoBehaviour {
             {
                 button.onClick.AddListener(() => {
                     GameManager.Instance.ProcessChoiceEffects(choice); // APPLY ITEM EFFECTS
-                    Thumbnail linkedThumbnail = _story.Thumbnails.Find(t => t.Id == choice.ThumbnailLinkId);
+                    Thumbnail linkedThumbnail = _Story.Thumbnails.Find(t => t.Id == choice.ThumbnailLinkId);
                     LoadThumbnail(linkedThumbnail);
                 });
             }
         }
         
-    }
-
-    private void LoadImageFromPath(string imagePath)
-    {
-        if (File.Exists(imagePath))
-        {
-            byte[] imageData = File.ReadAllBytes(imagePath);
-            Texture2D texture = new Texture2D(2, 2);
-            texture.LoadImage(imageData);
-            
-            Sprite sprite = Sprite.Create(texture, 
-                new Rect(0, 0, texture.width, texture.height), 
-                new Vector2(0.5f, 0.5f));
-                
-            Image.sprite = sprite;
-        }
-        else
-        {
-            Debug.LogWarning($"Image not found at path: {imagePath}");
-        }
     }
 
     private IEnumerator LoadAudioCoroutine(string filePath, AudioSource targetSource, bool loop)

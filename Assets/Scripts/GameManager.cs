@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
         StoryTitle = "TheLostTemple";
         StoryFolder = Application.persistentDataPath + "/" + StoryTitle;
         FullStoryPath = StoryFolder + "/" + StoryTitle + ".json";
-
+        
         if (LastGameExist()) LoadLastGame(); else LoadStory();
         
 
@@ -48,10 +48,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
     [ContextMenu("SaveGame")]
     public void SaveGame(Thumbnail currentThumbnail) 
     {
-        _CurrentThumbnail = currentThumbnail;
-    
         // Direct assignment - much clearer
-        _CurrentSaveState.thumbnail = _CurrentThumbnail;
+        _CurrentSaveState.thumbnail = currentThumbnail;
         _CurrentSaveState.items = _CurrentInventory;
     
         string json = JsonUtility.ToJson(_CurrentSaveState);
@@ -71,7 +69,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
         
         //We set up the entire story
         ThumbnailUI.Setup(_CurrentStory,  StoryFolder);
-
+        
         try
         {
             //Give the items the player had last game.
@@ -83,7 +81,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
         }
         catch (Exception e)
         {
-            //Seems to work, but I don't see the error message? IDK who care.
+            //Seems to work, but I don't see the error message? IDK who cares.
             Console.WriteLine(e + "This save does not belong to this story. Starting a new story.");
             LoadStory();
         }
@@ -116,7 +114,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
             _CurrentInventory.RemoveAll(item => item.Id == takenId);
         }
         
-        // Add given items (you'll need to reference the story's item list)
+        // Add given items to _CurrentInventory
         foreach (string givenId in choice.GivenItemsId)
         {
             var itemToAdd = _CurrentStory.Items.Find(i => i.Id == givenId);
